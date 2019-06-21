@@ -1,0 +1,8 @@
+[package]
+name = "rsn"
+version = "0.1.0"
+authors = ["Nguyễn Việt Hưng <hunggarena12@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+ncurses = "*"
