@@ -1,6 +1,7 @@
+extern crate feed_parser;
 extern crate ncurses;
-use ncurses::*;
 
+use ncurses::*;
 mod command_input;
 mod source_list;
 

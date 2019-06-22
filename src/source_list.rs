@@ -1,9 +1,18 @@
+use feed_parser::parser;
 use ncurses::*;
+
+#[derive(Clone)]
+pub struct Source {
+  url: String,
+  title: String
+}
 
 #[derive(Clone)]
 pub struct SourceList {
   win: WINDOW,
-  sources: Vec<String>,
+  sources: Vec<Source>,
+  width: i32,
+  height: i32,
 }
 
 impl SourceList {
@@ -18,12 +27,19 @@ impl SourceList {
     SourceList {
       win: win,
       sources: Vec::new(),
+      width: width,
+      height: height,
     }
   }
 
   pub fn add_source(&mut self, source: String) {
-    self.sources.push(source);
-    self.render_sources();
+    if let Some(feed) = parser::from_url(&source) {
+      self.sources.push(Source {
+        title: feed.title.unwrap_or(source.clone()),
+        url: source.clone()
+      });
+      self.render_sources();
+    }
   }
 
   pub fn render_sources(&self) {
@@ -31,8 +47,14 @@ impl SourceList {
       mvwaddstr(self.win, 1, 1, "No source found!");
     } else {
       let mut line = 1;
-      for source in &self.sources {
-        mvwaddstr(self.win, line, 1, &source);
+      for source_data in &self.sources {
+        let source = &source_data.title;
+        let formatted_source: String = if source.len() as i32 > self.width {
+          format!("{}{}", &source[0..(self.width - 4) as usize], "..")
+        } else {
+          source.to_string()
+        };
+        mvwaddstr(self.win, line, 1, &formatted_source);
         line += 1;
       }
     }
@@ -41,6 +63,9 @@ impl SourceList {
 
   pub fn render(&self) {
     box_(self.win, 0, 0);
+    wattr_on(self.win, A_BOLD());
+    mvwaddstr(self.win, 0, 1, "Sources");
+    wattr_off(self.win, A_BOLD());
     self.render_sources();
   }
 }
