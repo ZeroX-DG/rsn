@@ -41,41 +41,6 @@ impl App {
     }
   }
   pub fn start(&mut self) {
-    let feed_vietnamese = vec![
-      // Vietnamese
-      "https://tuoitre.vn/rss/tin-moi-nhat.rss",
-      "https://tinhte.vn/rss",
-    ];
-
-    let feed_financial = vec![
-      // Investing, Economics and Financial
-      "http://feeds.marketwatch.com/marketwatch/topstories/",
-      "https://www.investing.com/rss/news.rss",
-      "http://feeds.reuters.com/reuters/businessNews",
-    ];
-
-    let feed_tech = vec![
-      // Technology
-      "https://www.reddit.com/r/Technologies+elm+haskell+emacs+javascript+programming+rust.rss",
-      "http://feeds.feedburner.com/TechCrunch/",
-      "https://news.ycombinator.com/rss",
-      "http://feeds.arstechnica.com/arstechnica/index",
-      "https://www.theverge.com/rss/index.xml",
-      "https://live.engadget.com/rss.xml",
-      "https://www.wired.com/feed/rss",
-      "https://thenextweb.com/feed/",
-    ];
-
-    let feed_other = vec![
-      // Other News
-      "https://www.theonion.com/rss",
-      "https://www.reddit.com/r/UpliftingNews+worldnews.rss",
-      "http://feeds.reuters.com/reuters/topNews",
-      "http://feeds.reuters.com/Reuters/domesticNews",
-      "http://feeds.reuters.com/Reuters/worldNews",
-    ];
-
-    let _feeds = [feed_vietnamese, feed_financial, feed_tech, feed_other].concat();
     self.source_list.borrow().render();
     self.command_input.render();
     self.main_area.borrow_mut().init();
@@ -95,10 +60,6 @@ impl App {
         main_area_clone.borrow_mut().load_feed(source);
         main_area_clone.borrow_mut().handle_focus_feed();
       });
-
-    for source in _feeds {
-      self.source_list.borrow_mut().add_source(source.to_string());
-    }
 
     loop {
       let ch: i32 = getch();

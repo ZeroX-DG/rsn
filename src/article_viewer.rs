@@ -28,7 +28,7 @@ impl ArticleViewer {
     if let Some(article) = &self.article {
       if let Some(title) = &article.title {
         wattr_on(self.win, A_BOLD());
-        mvwaddstr(self.win, 0, 0, &format!("{}\n", title));
+        mvwaddstr(self.win, 0, 0, &format!("{}\n\n", title));
         wattr_off(self.win, A_BOLD());
       }
       if let Some(link) = &article.alternate.first() {

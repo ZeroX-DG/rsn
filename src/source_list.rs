@@ -86,7 +86,7 @@ impl SourceList {
 
   pub fn render_sources(&self) {
     if self.sources.len() as i32 == 0 {
-      mvwaddstr(self.win, 1, 1, "No source found!");
+      mvwaddstr(self.win, 1, 2, "No source found!");
     } else {
       let mut line = 1;
       for source_data in &self.sources {
