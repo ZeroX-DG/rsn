@@ -2,6 +2,7 @@ use super::source_list::Source;
 use chrono::prelude::*;
 use feed_parser::{parser, Entry};
 use ncurses::*;
+
 const WIN_FEED: i32 = 0;
 
 pub struct MainArea {
@@ -68,6 +69,7 @@ impl MainArea {
       } else {
         title.to_string()
       };
+
       wattr_on(self.win, A_BOLD());
       mvwaddstr(self.win, y, 1, &formatted_title);
       wattr_off(self.win, A_BOLD());

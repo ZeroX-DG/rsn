@@ -1,6 +1,6 @@
-extern crate feed_parser;
-extern crate ncurses;
 extern crate chrono;
+extern crate ncurses;
+
 
 use ncurses::*;
 mod command_input;
@@ -71,6 +71,8 @@ impl App {
 }
 
 fn main() {
+  let locale_conf = LcCategory::all;
+  setlocale(locale_conf, "en_US.UTF-8");
   initscr();
   noecho();
   refresh();

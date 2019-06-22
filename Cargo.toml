@@ -5,6 +5,9 @@ authors = ["Nguyễn Việt Hưng <hunggarena12@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-ncurses = "*"
 feed-parser = { path = "./feed-parser" }
 chrono = "0.4"
+
+[dependencies.ncurses]
+version = "*"
+features = ["wide"]

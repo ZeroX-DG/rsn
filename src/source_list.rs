@@ -14,7 +14,7 @@ pub struct SourceList {
   sources: Vec<Source>,
   width: i32,
   selected_index: i32,
-  on_source_select: Option<Box<FnMut(Source)>>
+  on_source_select: Option<Box<FnMut(Source)>>,
 }
 
 impl SourceList {
@@ -29,10 +29,19 @@ impl SourceList {
     keypad(win, true);
     SourceList {
       win: win,
-      sources: Vec::new(),
+      sources: vec![
+        Source {
+          title: String::from("full snack blog"),
+          url: String::from("https://thefullsnack.com/rss.xml"),
+        },
+        Source {
+          title: String::from("Techcrunch"),
+          url: String::from("https://techcrunch.com/feed/"),
+        },
+      ],
       width: width,
       selected_index: -1,
-      on_source_select: None
+      on_source_select: None,
     }
   }
 
