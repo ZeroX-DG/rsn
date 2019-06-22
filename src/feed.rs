@@ -50,13 +50,17 @@ impl Feed {
           if self.selected_index > 0 {
             self.selected_index -= 1;
           }
+
+          if self.selected_index * 3 + self.scroll_top < 0 {
+            self.scroll_top += 4;
+          }
         }
         KEY_DOWN => {
           if self.selected_index < self.feed.len() as i32 - 1 {
             self.selected_index += 1;
           }
 
-          if self.selected_index * 3 + self.scroll_top >= self.height {
+          if self.selected_index * 3 + self.scroll_top > self.height {
             self.scroll_top -= 4;
           }
         }
