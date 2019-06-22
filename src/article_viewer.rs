@@ -25,14 +25,14 @@ impl ArticleViewer {
     if let Some(article) = &self.article {
       if let Some(title) = &article.title {
         wattr_on(self.win, A_BOLD());
-        mvwaddstr(self.win, 0, 1, title);
+        mvwaddstr(self.win, 0, 1, &format!("{}\n ", title));
         wattr_off(self.win, A_BOLD());
       }
       if let Some(link) = &article.alternate.first() {
         let scraped_result = extractor::scrape(&link.href);
         match scraped_result {
-          Ok(scraped_data) => mvwaddstr(self.win, 1, 1, &scraped_data.text),
-          Err(_) => mvwaddstr(self.win, 1, 1, "Failed to fetch article")
+          Ok(scraped_data) => waddstr(self.win, &scraped_data.text),
+          Err(_) => waddstr(self.win, "Failed to fetch article"),
         };
       }
     }

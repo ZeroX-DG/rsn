@@ -30,16 +30,7 @@ impl SourceList {
     keypad(win, true);
     SourceList {
       win: win,
-      sources: vec![
-        Source {
-          title: String::from("full snack blog"),
-          url: String::from("https://thefullsnack.com/rss.xml"),
-        },
-        Source {
-          title: String::from("Unixporn"),
-          url: String::from("https://www.reddit.com/r/unixporn/.rss"),
-        },
-      ],
+      sources: Vec::new(),
       width: width,
       selected_index: -1,
       on_source_select: None,
