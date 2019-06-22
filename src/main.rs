@@ -1,17 +1,20 @@
 extern crate feed_parser;
 extern crate ncurses;
+extern crate chrono;
 
 use ncurses::*;
 mod command_input;
-mod source_list;
 
+mod main_area;
+mod source_list;
 use command_input::Command;
 use command_input::CommandInput;
-use source_list::SourceList;
 
-use std::rc::Rc;
+use main_area::MainArea;
+use source_list::{Source, SourceList};
+
 use std::cell::RefCell;
-
+use std::rc::Rc;
 const ADD_SOURCE_KEY: i32 = 105; // 'i' key
 const FOCUS_SOURCE_LIST_KEY: i32 = 108; // 'l' key
 const ACTION_ADD_SOURCE: &'static str = "add_source";
@@ -19,20 +22,24 @@ const ACTION_ADD_SOURCE: &'static str = "add_source";
 struct App {
   source_list: Rc<RefCell<SourceList>>,
   command_input: CommandInput,
+  main_area: Rc<RefCell<MainArea>>,
 }
 
 impl App {
   pub fn new() -> App {
     let source_list = Rc::new(RefCell::new(SourceList::new()));
     let command_input = CommandInput::new();
+    let main_area = Rc::new(RefCell::new(MainArea::new()));
     App {
       source_list: source_list,
       command_input: command_input,
+      main_area: main_area,
     }
   }
   pub fn start(&mut self) {
     self.source_list.borrow().render();
     self.command_input.render();
+    self.main_area.borrow().render();
     let source_list_clone = self.source_list.clone();
     self.command_input.on_command(move |command: Command| {
       match command.name {
@@ -40,6 +47,13 @@ impl App {
         _ => (),
       };
     });
+    let main_area_clone = self.main_area.clone();
+    self
+      .source_list
+      .borrow_mut()
+      .on_source_select(move |source: Source| {
+        main_area_clone.borrow_mut().load_feed(source);
+      });
     loop {
       let ch: i32 = getch();
       match ch {

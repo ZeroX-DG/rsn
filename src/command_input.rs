@@ -50,12 +50,11 @@ impl CommandInput {
           }
         }
         ENTER => {
-          match &mut self.on_command {
-            Some(cb) => cb(Command {
+          if let Some(cb) = &mut self.on_command {
+            cb(Command {
               name: &self.command_name,
               value: self.input.clone(),
-            }),
-            _ => {}
+            });
           };
           self.input.clear();
           self.prompt = "";

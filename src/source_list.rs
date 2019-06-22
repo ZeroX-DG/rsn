@@ -1,9 +1,12 @@
 use feed_parser::parser;
 use ncurses::*;
 
+const ENTER: i32 = 10;
+
+#[derive(Clone)]
 pub struct Source {
-  url: String,
-  title: String,
+  pub url: String,
+  pub title: String,
 }
 
 pub struct SourceList {
@@ -11,6 +14,7 @@ pub struct SourceList {
   sources: Vec<Source>,
   width: i32,
   selected_index: i32,
+  on_source_select: Option<Box<FnMut(Source)>>
 }
 
 impl SourceList {
@@ -28,6 +32,7 @@ impl SourceList {
       sources: Vec::new(),
       width: width,
       selected_index: -1,
+      on_source_select: None
     }
   }
 
@@ -39,6 +44,10 @@ impl SourceList {
       });
       self.render();
     }
+  }
+
+  pub fn on_source_select<F: FnMut(Source) + 'static>(&mut self, cb: F) {
+    self.on_source_select = Some(Box::new(cb));
   }
 
   pub fn handle_focus(&mut self) {
@@ -57,7 +66,10 @@ impl SourceList {
             self.selected_index += 1;
           }
         }
-        KEY_ENTER => {
+        ENTER => {
+          if let Some(cb) = &mut self.on_source_select {
+            cb(self.sources[self.selected_index as usize].clone());
+          };
           break;
         }
         _ => {}

@@ -7,3 +7,4 @@ edition = "2018"
 [dependencies]
 ncurses = "*"
 feed-parser = { path = "./feed-parser" }
+chrono = "0.4"
