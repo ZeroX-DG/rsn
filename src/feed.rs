@@ -75,7 +75,7 @@ impl Feed {
     if self.feed.len() as i32 == 0 {
       mvwaddstr(self.win, 1, 1, "Nothing to see here!");
     } else {
-      let mut line = 1;
+      let mut line = 0;
       for entry in &self.feed {
         self.render_entry(line, entry);
         line += 3;
@@ -100,7 +100,7 @@ impl Feed {
         title.to_string()
       };
 
-      if self.selected_index * 3 + 1 == y {
+      if self.selected_index * 3 == y {
         wattr_on(self.win, A_REVERSE());
         mvwaddstr(self.win, y, 1, &formatted_title);
         wattr_off(self.win, A_REVERSE());
