@@ -8,6 +8,8 @@ const KEY_Q: i32 = 113;
 pub struct Feed {
   win: WINDOW,
   width: i32,
+  height: i32,
+  scroll_top: i32,
   feed: Vec<Entry>,
   selected_index: i32,
   on_entry_select: Option<Box<FnMut(Entry)>>,
@@ -20,6 +22,8 @@ impl Feed {
     Feed {
       win: win,
       width: width,
+      height: height,
+      scroll_top: 0,
       feed: Vec::new(),
       selected_index: -1,
       on_entry_select: None,
@@ -51,6 +55,10 @@ impl Feed {
           if self.selected_index < self.feed.len() as i32 - 1 {
             self.selected_index += 1;
           }
+
+          if self.selected_index * 3 + self.scroll_top >= self.height {
+            self.scroll_top -= 4;
+          }
         }
         ENTER => {
           if let Some(cb) = &mut self.on_entry_select {
@@ -76,7 +84,7 @@ impl Feed {
     if self.feed.len() as i32 == 0 {
       mvwaddstr(self.win, 0, 1, "Nothing to see here!");
     } else {
-      let mut line = 0;
+      let mut line = self.scroll_top;
       for entry in &self.feed {
         self.render_entry(line, entry);
         line += 3;
@@ -88,7 +96,7 @@ impl Feed {
   pub fn render_entry(&self, y: i32, entry: &Entry) {
     // Render title
     if let Some(title) = &entry.title {
-      let formatted_title: String = if title.len() as i32 > self.width {
+      let formatted_title: String = if title.len() as i32 + 1 > self.width {
         format!(
           "{}{}",
           title
@@ -101,7 +109,7 @@ impl Feed {
         title.to_string()
       };
 
-      if self.selected_index * 3 == y {
+      if self.selected_index * 3 + self.scroll_top == y {
         wattr_on(self.win, A_REVERSE());
         mvwaddstr(self.win, y, 1, &formatted_title);
         wattr_off(self.win, A_REVERSE());
