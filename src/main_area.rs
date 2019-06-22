@@ -32,7 +32,7 @@ impl MainArea {
     let win = newwin(height, width, 0, x);
     keypad(win, true);
     let feed = Feed::new(height - 2, width - 2, 1, x + 1);
-    let article_viewer = ArticleViewer::new(height - 2, width - 2, 1, x + 1);
+    let article_viewer = ArticleViewer::new(height - 2, width - 4, 1, x + 2);
 
     MainArea {
       win: Rc::new(RefCell::new(win)),
@@ -72,11 +72,11 @@ impl MainArea {
     };
     mvwaddstr(*self.win.borrow(), 0, 1, title);
     wattr_off(*self.win.borrow(), A_BOLD());
+    wrefresh(*self.win.borrow());
     if *self.active_win.borrow() == WIN_FEED {
       self.feed.borrow().render();
     } else {
       self.article_viewer.borrow().render();
     }
-    wrefresh(*self.win.borrow());
   }
 }

@@ -73,7 +73,7 @@ impl Feed {
   pub fn render(&self) {
     wclear(self.win);
     if self.feed.len() as i32 == 0 {
-      mvwaddstr(self.win, 1, 1, "Nothing to see here!");
+      mvwaddstr(self.win, 0, 1, "Nothing to see here!");
     } else {
       let mut line = 0;
       for entry in &self.feed {

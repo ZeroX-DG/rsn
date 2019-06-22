@@ -21,7 +21,6 @@ impl ArticleViewer {
   }
 
   pub fn render(&self) {
-    mvwaddstr(self.win, 2, 2, "YO");
     if let Some(article) = &self.article {
       if let Some(title) = &article.title {
         wattr_on(self.win, A_BOLD());
