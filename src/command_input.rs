@@ -3,13 +3,17 @@ use std::char;
 
 const ENTER: i32 = 10; // ENTER KEY, some how ncurses-rs ENTER KEY doesn't match
 
-type Callback = Option<Box<Fn(String)>>;
+pub struct Command {
+  pub name: &'static str,
+  pub value: String,
+}
 
 pub struct CommandInput {
   win: WINDOW,
   input: String,
   prompt: &'static str,
-  on_command: Callback,
+  command_name: &'static str,
+  on_command: Option<Box<FnMut(Command)>>,
 }
 
 impl CommandInput {
@@ -23,8 +27,13 @@ impl CommandInput {
       win: win,
       input: String::new(),
       prompt: "",
+      command_name: "",
       on_command: None,
     }
+  }
+
+  pub fn set_command_name(&mut self, name: &'static str) {
+    self.command_name = name;
   }
 
   pub fn prompt(&mut self, prompt: &'static str) {
@@ -41,8 +50,11 @@ impl CommandInput {
           }
         }
         ENTER => {
-          match &self.on_command {
-            Some(cb) => cb(self.input.clone()),
+          match &mut self.on_command {
+            Some(cb) => cb(Command {
+              name: &self.command_name,
+              value: self.input.clone(),
+            }),
             _ => {}
           };
           self.input.clear();
@@ -58,7 +70,7 @@ impl CommandInput {
     }
   }
 
-  pub fn on_command<F: Fn(String) + 'static>(&mut self, cb: F) {
+  pub fn on_command<F: FnMut(Command) + 'static>(&mut self, cb: F) {
     self.on_command = Some(Box::new(cb));
   }
 

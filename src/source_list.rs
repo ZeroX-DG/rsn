@@ -1,5 +1,6 @@
 use ncurses::*;
 
+#[derive(Clone)]
 pub struct SourceList {
   win: WINDOW,
   sources: Vec<String>,
@@ -22,13 +23,24 @@ impl SourceList {
 
   pub fn add_source(&mut self, source: String) {
     self.sources.push(source);
+    self.render_sources();
+  }
+
+  pub fn render_sources(&self) {
+    if self.sources.len() as i32 == 0 {
+      mvwaddstr(self.win, 1, 1, "No source found!");
+    } else {
+      let mut line = 1;
+      for source in &self.sources {
+        mvwaddstr(self.win, line, 1, &source);
+        line += 1;
+      }
+    }
+    wrefresh(self.win);
   }
 
   pub fn render(&self) {
     box_(self.win, 0, 0);
-    if self.sources.len() as i32 == 0 {
-      mvwaddstr(self.win, 1, 1, "No source found!");
-    }
-    wrefresh(self.win);
+    self.render_sources();
   }
 }
