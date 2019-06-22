@@ -1,6 +1,7 @@
 use feed_parser::parser;
 use ncurses::*;
 
+const KEY_Q: i32 = 113;
 const ENTER: i32 = 10;
 
 #[derive(Clone)]
@@ -35,8 +36,8 @@ impl SourceList {
           url: String::from("https://thefullsnack.com/rss.xml"),
         },
         Source {
-          title: String::from("Techcrunch"),
-          url: String::from("https://techcrunch.com/feed/"),
+          title: String::from("Unixporn"),
+          url: String::from("https://www.reddit.com/r/unixporn/.rss"),
         },
       ],
       width: width,
@@ -60,8 +61,10 @@ impl SourceList {
   }
 
   pub fn handle_focus(&mut self) {
-    self.selected_index = 0;
-    self.render();
+    if self.selected_index == -1 {
+      self.selected_index = 0;
+      self.render();
+    }
     loop {
       let ch = wgetch(self.win);
       match ch {
@@ -79,6 +82,9 @@ impl SourceList {
           if let Some(cb) = &mut self.on_source_select {
             cb(self.sources[self.selected_index as usize].clone());
           };
+          break;
+        }
+        KEY_Q => {
           break;
         }
         _ => {}

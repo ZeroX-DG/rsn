@@ -1,11 +1,13 @@
 extern crate ncurses;
 
-use ncurses::*;
+mod article_viewer;
 mod command_input;
-
+mod feed;
 mod main_area;
 mod source_list;
-mod feed;
+
+use ncurses::*;
+
 use command_input::Command;
 use command_input::CommandInput;
 
@@ -14,8 +16,10 @@ use source_list::{Source, SourceList};
 
 use std::cell::RefCell;
 use std::rc::Rc;
+
 const ADD_SOURCE_KEY: i32 = 105; // 'i' key
 const FOCUS_SOURCE_LIST_KEY: i32 = 108; // 'l' key
+const FOCUS_FEED_KEY: i32 = 102; // 'f' key
 const ACTION_ADD_SOURCE: &'static str = "add_source";
 
 struct App {
@@ -38,6 +42,7 @@ impl App {
   pub fn start(&mut self) {
     self.source_list.borrow().render();
     self.command_input.render();
+    self.main_area.borrow_mut().init();
     self.main_area.borrow().render();
     let source_list_clone = self.source_list.clone();
     self.command_input.on_command(move |command: Command| {
@@ -52,6 +57,7 @@ impl App {
       .borrow_mut()
       .on_source_select(move |source: Source| {
         main_area_clone.borrow_mut().load_feed(source);
+        main_area_clone.borrow_mut().handle_focus_feed();
       });
     loop {
       let ch: i32 = getch();
@@ -62,6 +68,9 @@ impl App {
         }
         FOCUS_SOURCE_LIST_KEY => {
           self.source_list.borrow_mut().handle_focus();
+        }
+        FOCUS_FEED_KEY => {
+          self.main_area.borrow_mut().handle_focus_feed();
         }
         _ => (),
       };
