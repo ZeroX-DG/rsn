@@ -1,16 +1,13 @@
+use super::feed::Feed;
 use super::source_list::Source;
-use chrono::prelude::*;
-use feed_parser::{parser, Entry};
 use ncurses::*;
 
 const WIN_FEED: i32 = 0;
 
 pub struct MainArea {
   win: WINDOW,
-  width: i32,
   active_win: i32,
-  selected_index: i32,
-  feed: Vec<Entry>,
+  feed: Feed,
 }
 
 impl MainArea {
@@ -25,64 +22,17 @@ impl MainArea {
     let height = screen_h - 1;
     let win = newwin(height, width, 0, x);
     keypad(win, true);
+    let feed = Feed::new(height - 1, width - 2, 0, x + 1);
     MainArea {
       win: win,
       active_win: WIN_FEED,
-      width: width,
-      selected_index: -1,
-      feed: Vec::new(),
+      feed: feed,
     }
   }
 
   pub fn load_feed(&mut self, source: Source) {
     self.active_win = WIN_FEED;
-    if let Some(feed) = parser::from_url(&source.url) {
-      self.feed = feed.entries;
-      self.render();
-    }
-  }
-
-  pub fn render_feed(&self) {
-    if self.feed.len() as i32 == 0 {
-      mvwaddstr(self.win, 1, 1, "Nothing to see here!");
-    } else {
-      let mut line = 1;
-      for entry in &self.feed {
-        self.render_entry(line, entry);
-        line += 3;
-      }
-    }
-  }
-
-  pub fn render_entry(&self, y: i32, entry: &Entry) {
-    // Render title
-    if let Some(title) = &entry.title {
-      let formatted_title: String = if title.len() as i32 > self.width {
-        format!(
-          "{}{}",
-          title
-            .chars()
-            .take((self.width - 6) as usize)
-            .collect::<String>(),
-          ".."
-        )
-      } else {
-        title.to_string()
-      };
-
-      wattr_on(self.win, A_BOLD());
-      mvwaddstr(self.win, y, 1, &formatted_title);
-      wattr_off(self.win, A_BOLD());
-    }
-
-    // Render meta
-    // date
-    mvwaddstr(
-      self.win,
-      y + 1,
-      1,
-      &entry.published.format("%Y-%m-%d").to_string(),
-    );
+    self.feed.load_feed(source);
   }
 
   pub fn render(&self) {
@@ -96,7 +46,9 @@ impl MainArea {
     };
     mvwaddstr(self.win, 0, 1, title);
     wattr_off(self.win, A_BOLD());
-    self.render_feed();
+    if self.active_win == WIN_FEED {
+      self.feed.render();
+    }
     wrefresh(self.win);
   }
 }

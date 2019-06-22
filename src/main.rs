@@ -1,12 +1,11 @@
-extern crate chrono;
 extern crate ncurses;
-
 
 use ncurses::*;
 mod command_input;
 
 mod main_area;
 mod source_list;
+mod feed;
 use command_input::Command;
 use command_input::CommandInput;
 

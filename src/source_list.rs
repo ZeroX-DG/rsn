@@ -94,17 +94,24 @@ impl SourceList {
       let mut line = 1;
       for source_data in &self.sources {
         let source = &source_data.title;
-        let formatted_source: String = if source.len() as i32 > self.width {
-          format!("{}{}", &source[0..(self.width - 4) as usize], "..")
+        let formatted_source: String = if source.len() as i32 + 3 > self.width {
+          format!(
+            "{}{}",
+            source
+              .chars()
+              .take((self.width - 5) as usize)
+              .collect::<String>(),
+            ".."
+          )
         } else {
           source.to_string()
         };
         if self.selected_index == line - 1 {
           wattr_on(self.win, A_REVERSE());
-          mvwaddstr(self.win, line, 1, &formatted_source);
+          mvwaddstr(self.win, line, 2, &formatted_source);
           wattr_off(self.win, A_REVERSE());
         } else {
-          mvwaddstr(self.win, line, 1, &formatted_source);
+          mvwaddstr(self.win, line, 2, &formatted_source);
         }
         line += 1;
       }
