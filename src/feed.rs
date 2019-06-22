@@ -29,6 +29,7 @@ impl Feed {
   pub fn load_feed(&mut self, source: Source) {
     if let Some(feed) = parser::from_url(&source.url) {
       self.feed = feed.entries;
+      self.selected_index = 0;
       self.render();
     }
   }
