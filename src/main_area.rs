@@ -64,14 +64,6 @@ impl MainArea {
   pub fn render(&self) {
     wclear(*self.win.borrow());
     box_(*self.win.borrow(), 0, 0);
-    wattr_on(*self.win.borrow(), A_BOLD());
-    let title = if *self.active_win.borrow() == WIN_FEED {
-      "Feed"
-    } else {
-      "Article viewer"
-    };
-    mvwaddstr(*self.win.borrow(), 0, 1, title);
-    wattr_off(*self.win.borrow(), A_BOLD());
     wrefresh(*self.win.borrow());
     if *self.active_win.borrow() == WIN_FEED {
       self.feed.borrow().render();

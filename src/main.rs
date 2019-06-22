@@ -1,4 +1,5 @@
 extern crate ncurses;
+extern crate readability;
 
 mod article_viewer;
 mod command_input;

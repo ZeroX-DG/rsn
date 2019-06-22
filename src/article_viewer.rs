@@ -1,5 +1,6 @@
 use feed_parser::Entry;
 use ncurses::*;
+use readability::extractor;
 
 pub struct ArticleViewer {
   win: WINDOW,
@@ -27,8 +28,12 @@ impl ArticleViewer {
         mvwaddstr(self.win, 0, 1, title);
         wattr_off(self.win, A_BOLD());
       }
-      if let Some(content) = &article.content {
-        mvwaddstr(self.win, 1, 1, content);
+      if let Some(link) = &article.alternate.first() {
+        let scraped_result = extractor::scrape(&link.href);
+        match scraped_result {
+          Ok(scraped_data) => mvwaddstr(self.win, 1, 1, &scraped_data.text),
+          Err(_) => mvwaddstr(self.win, 1, 1, "Failed to fetch article")
+        };
       }
     }
     wrefresh(self.win);
