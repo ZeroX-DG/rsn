@@ -21,6 +21,7 @@ use std::rc::Rc;
 const ADD_SOURCE_KEY: i32 = 105; // 'i' key
 const FOCUS_SOURCE_LIST_KEY: i32 = 108; // 'l' key
 const FOCUS_FEED_KEY: i32 = 102; // 'f' key
+const BACK_TO_FEED_KEY: i32 = 98;
 const ACTION_ADD_SOURCE: &'static str = "add_source";
 
 struct App {
@@ -73,6 +74,9 @@ impl App {
         }
         FOCUS_FEED_KEY => {
           self.main_area.borrow_mut().handle_focus_feed();
+        }
+        BACK_TO_FEED_KEY => {
+          self.main_area.borrow_mut().handle_back_to_feed();
         }
         _ => (),
       };

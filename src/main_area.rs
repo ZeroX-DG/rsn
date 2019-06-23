@@ -61,6 +61,12 @@ impl MainArea {
     self.feed.borrow_mut().handle_focus();
   }
 
+  pub fn handle_back_to_feed(&mut self) {
+    *self.active_win.borrow_mut() = WIN_FEED;
+    self.render();
+    self.handle_focus_feed();
+  }
+
   pub fn render(&self) {
     wclear(*self.win.borrow());
     box_(*self.win.borrow(), 0, 0);
