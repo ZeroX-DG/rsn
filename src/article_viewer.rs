@@ -33,6 +33,7 @@ impl ArticleViewer {
   }
 
   pub fn set_article(&mut self, article: Entry) {
+    self.scroll_top = 0;
     if let Some(title) = &article.title {
       self.title = title.to_string();
     }
