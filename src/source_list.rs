@@ -71,7 +71,9 @@ impl SourceList {
         }
         ENTER => {
           if let Some(cb) = &mut self.on_source_select {
-            cb(self.sources[self.selected_index as usize].clone());
+            if self.sources.len() as i32 > self.selected_index && self.selected_index != -1 {
+              cb(self.sources[self.selected_index as usize].clone());
+            }
           };
           break;
         }
