@@ -6,6 +6,7 @@ mod command_input;
 mod feed;
 mod main_area;
 mod source_list;
+mod util;
 
 use ncurses::*;
 

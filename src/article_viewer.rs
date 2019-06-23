@@ -1,3 +1,4 @@
+use super::util;
 use feed_parser::Entry;
 use html2text::from_read;
 use ncurses::*;
@@ -82,9 +83,27 @@ impl ArticleViewer {
     mvwaddstr(self.win, self.scroll_top, 0, &format!("{}", &self.title));
     wattr_off(self.win, A_BOLD());
     let mut y = 3;
-    for line in self.content.lines() {
-      mvwaddstr(self.win, y + self.scroll_top, 0, &format!("{}", line));
-      y += 1;
+    let parts = util::parse_effects(String::from(self.content.clone()));
+    let mut pos = 0;
+    for part in parts {
+      if part.0 == "\n" {
+        y += 1;
+        pos = -1;
+      } else if part.1 == "normal" {
+        mvwaddstr(self.win, y + self.scroll_top, pos, &part.0);
+      } else {
+        let effect = if part.1 == "bold" {
+          A_BOLD()
+        } else if part.1 == "code" {
+          A_REVERSE()
+        } else {
+          A_ITALIC()
+        };
+        wattr_on(self.win, effect);
+        mvwaddstr(self.win, y + self.scroll_top, pos, &part.0);
+        wattr_off(self.win, effect);
+      }
+      pos += part.0.chars().count() as i32
     }
     wrefresh(self.win);
   }
