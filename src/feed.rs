@@ -100,7 +100,7 @@ impl Feed {
   pub fn render_entry(&self, y: i32, entry: &Entry) {
     // Render title
     if let Some(title) = &entry.title {
-      let formatted_title: String = if title.len() as i32 + 1 > self.width {
+      let formatted_title: String = if title.len() as i32 + 2 > self.width {
         format!(
           "{}{}",
           title
