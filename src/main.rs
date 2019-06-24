@@ -3,6 +3,7 @@ extern crate ncurses;
 extern crate readability;
 extern crate serde;
 extern crate serde_json;
+extern crate webbrowser;
 
 mod article_viewer;
 mod command_input;
@@ -27,7 +28,7 @@ use std::rc::Rc;
 const ADD_SOURCE_KEY: i32 = 105; // 'i' key
 const FOCUS_SOURCE_LIST_KEY: i32 = 108; // 'l' key
 const FOCUS_FEED_KEY: i32 = 102; // 'f' key
-const BACK_TO_FEED_KEY: i32 = 98;
+const BACK_TO_FEED_KEY: i32 = 98; // 'b' key
 const ACTION_ADD_SOURCE: &'static str = "add_source";
 
 struct App {

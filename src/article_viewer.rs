@@ -3,13 +3,16 @@ use feed_parser::Entry;
 use html2text::from_read;
 use ncurses::*;
 use readability::extractor;
+use webbrowser;
 
 const KEY_Q: i32 = 113;
+const KEY_O: i32 = 111;
 
 pub struct ArticleViewer {
   win: WINDOW,
   title: String,
   content: String,
+  url: String,
   width: i32,
   height: i32,
   scroll_top: i32,
@@ -25,6 +28,7 @@ impl ArticleViewer {
       win: win,
       title: String::new(),
       content: String::new(),
+      url: String::new(),
       width: width,
       height: height,
       scroll_top: 0,
@@ -46,6 +50,7 @@ impl ArticleViewer {
       };
       let article_content_clone = article_content.clone();
       self.content = article_content;
+      self.url = link.href.clone();
       self.lines = article_content_clone.lines().count() as i32;
       self.scrollable = self.lines > self.height;
     }
@@ -70,6 +75,9 @@ impl ArticleViewer {
         }
         KEY_Q => {
           break;
+        }
+        KEY_O => {
+          webbrowser::open(&self.url).unwrap();
         }
         _ => {}
       }
