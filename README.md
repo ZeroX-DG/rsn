@@ -2,6 +2,10 @@
 
 _A TUI-based RSS reader written in Rust_
 
+<p align="center">
+  <img src="assets/rsn3.gif" width="70%" />
+</p>
+
 ## But why?
 
 Have you ever wonder what will happen when an experienced JS/TS developer gives up all love and hope, trying to understand how the rust borrow checker works and failed pathetically? This is what he will produce.
