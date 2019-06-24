@@ -78,12 +78,12 @@ Keybindings for working with article area
 
 ## Screenshot
 
-<p style="text-align: center">
-  <img src="assets/rsn1.png" style="width: 70%" />
+<p align="center">
+  <img src="assets/rsn1.png" width="70%" />
 </p>
 
-<p style="text-align: center">
-  <img src="assets/rsn2.png" style="width: 70%" />
+<p align="center">
+  <img src="assets/rsn2.png" width="70%" />
 </p>
 
 ## Bonus
