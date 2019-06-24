@@ -65,21 +65,26 @@ Keybindings for working with feed area
 | ENTER      | Display the article and focus article view area |
 | q          | Pass control to the main app                    |
 
-**Feed area**
+**Article area**
 
-Keybindings for working with feed area
+Keybindings for working with article area
 
 | Key        | What it does                      |
 | ---------- | --------------------------------- |
 | UP_ARROW   | Scroll article up                 |
 | DOWN_ARROW | Opposite to the UP_ARROW function |
+| o          | Open article in browser           |
 | q          | Pass control to the main app      |
 
 ## Screenshot
 
-![](assets/rsn1.png)
+<p style="text-align: center">
+  <img src="assets/rsn1.png" style="width: 70%" />
+</p>
 
-![](assets/rsn2.png)
+<p style="text-align: center">
+  <img src="assets/rsn2.png" style="width: 70%" />
+</p>
 
 ## Bonus
 
