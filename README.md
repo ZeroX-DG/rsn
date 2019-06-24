@@ -81,9 +81,25 @@ Keybindings for working with feed area
 
 ![](assets/rsn2.png)
 
+## Bonus
+
+Beside of this awesome app, I also provide you with a sample list of news for you to read in case you're a lazy guy like me.
+
+Just copy the `user_data_sample.json` file to `$home/.rsn/user_data.json`.
+
+> \$home is your home directory
+
+## Todo
+
+- [ ] Allow rename source
+- [ ] Allow re-url source
+- [x] ~~Open article in browser~~
+
 ## Author
 
 - [Viet Hung Nguyen](https://github.com/ZeroX-DG)
+
+<a href="https://www.buymeacoffee.com/hQteV8A" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
 ## License
 
