@@ -10,6 +10,13 @@ Have you ever wonder what will happen when an experienced JS/TS developer gives 
 
 There's already a [web version](https://github.com/huytd/snacky-news-rs) from [@huytd](https://github.com/huytd).
 
+## Installation?
+
+1. Clone this repo
+2. Build this repo
+3. Run it like every other rust executable
+4. Duh!
+
 ## How to use it?
 
 After you run it, it will show you an empty workspace. These are the keybindings that you need to know to with it. These are the keybinding for the main app
