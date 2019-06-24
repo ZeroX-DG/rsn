@@ -82,6 +82,15 @@ impl App {
         user_data_clone.borrow_mut().save();
       });
 
+    let user_data_clone_2 = self.user_data.clone();
+    self
+      .source_list
+      .borrow_mut()
+      .on_source_removed(move |sources: Vec<Source>| {
+        user_data_clone_2.borrow_mut().set_sources(sources);
+        user_data_clone_2.borrow_mut().save();
+      });
+
     loop {
       let ch: i32 = getch();
       match ch {

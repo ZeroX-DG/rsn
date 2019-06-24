@@ -3,6 +3,7 @@ use ncurses::*;
 use serde::{Deserialize, Serialize};
 
 const KEY_Q: i32 = 113;
+const KEY_D: i32 = 100;
 const ENTER: i32 = 10;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -21,6 +22,7 @@ pub struct SourceList {
   scroll_top: i32,
   on_source_select: Option<Box<FnMut(Source)>>,
   on_source_added: Option<Box<FnMut(Source)>>,
+  on_source_removed: Option<Box<FnMut(Vec<Source>)>>,
 }
 
 impl SourceList {
@@ -44,6 +46,7 @@ impl SourceList {
       scroll_top: 0,
       on_source_select: None,
       on_source_added: None,
+      on_source_removed: None,
     }
   }
 
@@ -67,6 +70,10 @@ impl SourceList {
 
   pub fn on_source_added<F: FnMut(Source) + 'static>(&mut self, cb: F) {
     self.on_source_added = Some(Box::new(cb));
+  }
+
+  pub fn on_source_removed<F: FnMut(Vec<Source>) + 'static>(&mut self, cb: F) {
+    self.on_source_removed = Some(Box::new(cb));
   }
 
   pub fn handle_focus(&mut self) {
@@ -102,6 +109,13 @@ impl SourceList {
             }
           };
           break;
+        }
+        KEY_D => {
+          self.sources.remove(self.selected_index as usize);
+          self.selected_index = -1;
+          if let Some(cb) = &mut self.on_source_removed {
+            cb(self.sources.clone());
+          }
         }
         KEY_Q => {
           break;

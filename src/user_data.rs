@@ -41,6 +41,10 @@ impl UserData {
     self.sources.push(source);
   }
 
+  pub fn set_sources(&mut self, sources: Vec<Source>) {
+    self.sources = sources;
+  }
+
   pub fn save(&self) {
     match dirs::home_dir() {
       Some(path) => {
