@@ -66,7 +66,9 @@ impl Feed {
         }
         ENTER => {
           if let Some(cb) = &mut self.on_entry_select {
-            cb(self.feed[self.selected_index as usize].clone());
+            if self.feed.len() as i32 > self.selected_index && self.selected_index != -1 {
+              cb(self.feed[self.selected_index as usize].clone());
+            }
           };
           break;
         }
