@@ -1,10 +1,11 @@
 use feed_parser::parser;
 use ncurses::*;
+use serde::{Deserialize, Serialize};
 
 const KEY_Q: i32 = 113;
 const ENTER: i32 = 10;
 
-#[derive(Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Source {
   pub url: String,
   pub title: String,
@@ -16,10 +17,11 @@ pub struct SourceList {
   width: i32,
   selected_index: i32,
   on_source_select: Option<Box<FnMut(Source)>>,
+  on_source_added: Option<Box<FnMut(Source)>>,
 }
 
 impl SourceList {
-  pub fn new() -> SourceList {
+  pub fn new(sources: Vec<Source>) -> SourceList {
     let mut screen_w = 0;
     let mut screen_h = 0;
     getmaxyx(stdscr(), &mut screen_h, &mut screen_w);
@@ -30,25 +32,34 @@ impl SourceList {
     keypad(win, true);
     SourceList {
       win: win,
-      sources: Vec::new(),
+      sources: sources,
       width: width,
       selected_index: -1,
       on_source_select: None,
+      on_source_added: None,
     }
   }
 
   pub fn add_source(&mut self, source: String) {
     if let Some(feed) = parser::from_url(&source) {
-      self.sources.push(Source {
+      let new_source = Source {
         title: feed.title.unwrap_or(source.clone()),
         url: source.clone(),
-      });
+      };
+      self.sources.push(new_source.clone());
+      if let Some(cb) = &mut self.on_source_added {
+        cb(new_source.clone())
+      }
       self.render();
     }
   }
 
   pub fn on_source_select<F: FnMut(Source) + 'static>(&mut self, cb: F) {
     self.on_source_select = Some(Box::new(cb));
+  }
+
+  pub fn on_source_added<F: FnMut(Source) + 'static>(&mut self, cb: F) {
+    self.on_source_added = Some(Box::new(cb));
   }
 
   pub fn handle_focus(&mut self) {

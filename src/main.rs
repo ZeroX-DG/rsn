@@ -1,11 +1,15 @@
+extern crate dirs;
 extern crate ncurses;
 extern crate readability;
+extern crate serde;
+extern crate serde_json;
 
 mod article_viewer;
 mod command_input;
 mod feed;
 mod main_area;
 mod source_list;
+mod user_data;
 mod util;
 
 use ncurses::*;
@@ -15,6 +19,7 @@ use command_input::CommandInput;
 
 use main_area::MainArea;
 use source_list::{Source, SourceList};
+use user_data::UserData;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -29,17 +34,21 @@ struct App {
   source_list: Rc<RefCell<SourceList>>,
   command_input: CommandInput,
   main_area: Rc<RefCell<MainArea>>,
+  user_data: Rc<RefCell<UserData>>,
 }
 
 impl App {
   pub fn new() -> App {
-    let source_list = Rc::new(RefCell::new(SourceList::new()));
+    let user_data = Rc::new(RefCell::new(UserData::load()));
+    let sources = user_data.borrow().sources.clone();
+    let source_list = Rc::new(RefCell::new(SourceList::new(sources)));
     let command_input = CommandInput::new();
     let main_area = Rc::new(RefCell::new(MainArea::new()));
     App {
       source_list: source_list,
       command_input: command_input,
       main_area: main_area,
+      user_data: user_data,
     }
   }
   pub fn start(&mut self) {
@@ -61,6 +70,16 @@ impl App {
       .on_source_select(move |source: Source| {
         main_area_clone.borrow_mut().load_feed(source);
         main_area_clone.borrow_mut().handle_focus_feed();
+      });
+
+    let user_data_clone = self.user_data.clone();
+
+    self
+      .source_list
+      .borrow_mut()
+      .on_source_added(move |source: Source| {
+        user_data_clone.borrow_mut().add_source(source);
+        user_data_clone.borrow_mut().save();
       });
 
     loop {
