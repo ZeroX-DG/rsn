@@ -13,9 +13,12 @@ pub struct Source {
 
 pub struct SourceList {
   win: WINDOW,
+  inner_win: WINDOW,
   sources: Vec<Source>,
   width: i32,
+  height: i32,
   selected_index: i32,
+  scroll_top: i32,
   on_source_select: Option<Box<FnMut(Source)>>,
   on_source_added: Option<Box<FnMut(Source)>>,
 }
@@ -29,12 +32,16 @@ impl SourceList {
     let width = 30 * screen_w / 100;
     let height = screen_h - 1;
     let win = newwin(height, width, 0, 0);
+    let inner_win = newwin(height - 2, width - 2, 1, 1);
     keypad(win, true);
     SourceList {
       win: win,
+      inner_win: inner_win,
       sources: sources,
       width: width,
+      height: height,
       selected_index: -1,
+      scroll_top: 0,
       on_source_select: None,
       on_source_added: None,
     }
@@ -74,10 +81,18 @@ impl SourceList {
           if self.selected_index > 0 {
             self.selected_index -= 1;
           }
+
+          if self.selected_index + self.scroll_top < 0 {
+            self.scroll_top += 1;
+          }
         }
         KEY_DOWN => {
           if self.selected_index < self.sources.len() as i32 - 1 {
             self.selected_index += 1;
+          }
+
+          if self.selected_index + self.scroll_top > self.height - 3 {
+            self.scroll_top -= 1;
           }
         }
         ENTER => {
@@ -99,38 +114,38 @@ impl SourceList {
 
   pub fn render_sources(&self) {
     if self.sources.len() as i32 == 0 {
-      mvwaddstr(self.win, 1, 2, "No source found!");
+      mvwaddstr(self.inner_win, 0, 0, "No source found!");
     } else {
-      let mut line = 1;
+      let mut line = self.scroll_top;
       for source_data in &self.sources {
         let source = &source_data.title;
-        let formatted_source: String = if source.len() as i32 + 3 > self.width {
+        let max_width = self.width - 6;
+        let formatted_source: String = if source.len() as i32 > max_width {
           format!(
             "{}{}",
-            source
-              .chars()
-              .take((self.width - 5) as usize)
-              .collect::<String>(),
+            source.chars().take(max_width as usize).collect::<String>(),
             ".."
           )
         } else {
           source.to_string()
         };
-        if self.selected_index == line - 1 {
-          wattr_on(self.win, A_REVERSE());
-          mvwaddstr(self.win, line, 2, &formatted_source);
-          wattr_off(self.win, A_REVERSE());
+        if self.selected_index + self.scroll_top == line {
+          wattr_on(self.inner_win, A_REVERSE());
+          mvwaddstr(self.inner_win, line, 1, &formatted_source);
+          wattr_off(self.inner_win, A_REVERSE());
         } else {
-          mvwaddstr(self.win, line, 2, &formatted_source);
+          mvwaddstr(self.inner_win, line, 1, &formatted_source);
         }
         line += 1;
       }
     }
     wrefresh(self.win);
+    wrefresh(self.inner_win);
   }
 
   pub fn render(&self) {
     wclear(self.win);
+    wclear(self.inner_win);
     box_(self.win, 0, 0);
     wattr_on(self.win, A_BOLD());
     mvwaddstr(self.win, 0, 1, "Sources");
