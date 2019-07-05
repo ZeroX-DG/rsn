@@ -21,6 +21,8 @@ use darkside::*;
 use std::char;
 use user_data::UserData;
 
+const COMMAND_ADD_SOURCE: &str = "add source";
+
 enum Parts {
   MainApp,
   CommandInput,
@@ -28,7 +30,7 @@ enum Parts {
   MainArea,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Source {
   pub url: String,
   pub title: String,
@@ -36,13 +38,14 @@ pub struct Source {
 
 fn main() {
   new_app();
+  let mut active_command: Option<&str> = None;
   let mut active_part: Parts = Parts::MainApp;
   let mut active_feed: Option<Vec<Entry>> = None;
   let mut show_feed = false;
   let term_size = get_term_size();
   let term_width = term_size.0;
   let term_height = term_size.1;
-  let user_data = UserData::load();
+  let mut user_data = UserData::load();
   let mut command_input = new_input(0, term_height - 1, term_width, "", false);
 
   let source_list_width = term_width * 30 / 100;
@@ -54,7 +57,7 @@ fn main() {
     Some("Sources"),
     Border::All,
   );
-  let sources_display = user_data
+  let mut sources_display = user_data
     .sources
     .iter()
     .map(|source: &Source| source.title.clone())
@@ -64,7 +67,7 @@ fn main() {
     1,
     source_list_width - 4,
     term_height - 3,
-    sources_display,
+    sources_display.clone(),
   );
 
   let main_area_width = term_width - source_list_width;
@@ -96,6 +99,7 @@ fn main() {
     main_area_width - 4,
     term_height - 3,
   );
+
   loop {
     render_region(&main_area_region);
     render_region(&source_list_region);
@@ -123,20 +127,32 @@ fn main() {
       render_article_viewer(&article_viewer);
     }
     let ch = wait_for_key();
-    if ch == translate_key('i') {
-      command_input = set_input_prompt(command_input, "Add source");
-      active_part = Parts::CommandInput;
-      continue;
-    } else if ch == translate_key('l') {
-      active_part = Parts::SourceList;
-      continue;
-    } else if ch == translate_key('f') {
-      active_part = Parts::MainArea;
-      continue;
-    }
     match active_part {
+      Parts::MainApp => {
+        if ch == translate_key('i') {
+          active_command = Some(COMMAND_ADD_SOURCE);
+          command_input = set_input_prompt(command_input, COMMAND_ADD_SOURCE);
+          active_part = Parts::CommandInput;
+        } else if ch == translate_key('l') {
+          active_part = Parts::SourceList;
+        } else if ch == translate_key('f') {
+          active_part = Parts::MainArea;
+        }
+      }
       Parts::CommandInput => {
         if ch == KEY_RETURN {
+          let value = get_input_value(&command_input);
+          if let Some(command) = active_command {
+            if command == COMMAND_ADD_SOURCE {
+              let new_source = get_source_from_url(value);
+              if let Some(source) = new_source {
+                user_data.add_source(source.clone());
+                user_data.save();
+                sources_display.push(source.clone().title);
+              }
+            }
+          }
+          command_input = set_input_value(command_input, String::from(""));
           active_part = Parts::MainApp;
         } else {
           if let Some(char_input) = char::from_u32(ch as u32) {
@@ -185,7 +201,18 @@ fn main() {
           }
         }
       }
-      _ => (),
     }
+  }
+}
+
+fn get_source_from_url(url: String) -> Option<Source> {
+  if let Some(feed) = parser::from_url(&url) {
+    let new_source = Source {
+      title: feed.title.unwrap_or(url.clone()),
+      url: url.clone(),
+    };
+    Some(new_source)
+  } else {
+    None
   }
 }
