@@ -149,10 +149,12 @@ fn main() {
                 user_data.add_source(source.clone());
                 user_data.save();
                 sources_display.push(source.clone().title);
+                source_list = set_list_items(source_list, sources_display.clone());
               }
             }
           }
-          command_input = set_input_value(command_input, String::from(""));
+          command_input = set_input_visible(command_input, false);
+          render_input(&command_input);
           active_part = Parts::MainApp;
         } else {
           if let Some(char_input) = char::from_u32(ch as u32) {
