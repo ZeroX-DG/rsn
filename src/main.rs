@@ -5,12 +5,15 @@ extern crate serde;
 extern crate serde_json;
 extern crate webbrowser;
 
+mod article_viewer;
 mod user_data;
+mod util;
 
 use feed_parser::{parser, Entry};
 
 use serde::{Deserialize, Serialize};
 
+use article_viewer::*;
 use darkside::input::*;
 use darkside::list::*;
 use darkside::region::*;
@@ -87,6 +90,8 @@ fn main() {
   feed_list = set_list_item_height(feed_list, 2);
   feed_list = set_list_text_overflow(feed_list, TextOverflow::Ellipsis);
 
+  let mut article_viewer = new_article_viewer(source_list_width + 2,
+    1, main_area_width - 4, term_height - 3);
   loop {
     render_region(&main_area_region);
     render_region(&source_list_region);
@@ -95,19 +100,23 @@ fn main() {
       Parts::CommandInput => render_input(&command_input),
       _ => (),
     };
-    if let Some(feed) = &active_feed {
-      let feed_display = feed
-        .iter()
-        .map(|entry: &Entry| {
-          let title = match &entry.title {
-            Some(t) => t,
-            None => "",
-          };
-          format!("{}\n{}", title, entry.published)
-        })
-        .collect::<Vec<String>>();
-      feed_list = set_list_items(feed_list, feed_display);
-      render_list(&feed_list);
+    if show_feed {
+      if let Some(feed) = &active_feed {
+        let feed_display = feed
+          .iter()
+          .map(|entry: &Entry| {
+            let title = match &entry.title {
+              Some(t) => t,
+              None => "",
+            };
+            format!("{}\n{}", title, entry.published)
+          })
+          .collect::<Vec<String>>();
+        feed_list = set_list_items(feed_list, feed_display);
+        render_list(&feed_list);
+      }
+    } else {
+      render_article_viewer(&article_viewer);
     }
     let ch = wait_for_key();
     if ch == translate_key('i') {
@@ -152,6 +161,21 @@ fn main() {
             feed_list = move_next_list_item(feed_list);
           } else if ch == KEY_UP {
             feed_list = move_prev_list_item(feed_list);
+          } else if ch == KEY_RETURN {
+            let index = get_list_selected_index(&feed_list);
+            if let Some(feed) = &active_feed {
+              let selected_article = &feed[index as usize];
+              article_viewer = set_article(article_viewer, selected_article);
+              show_feed = false;
+            }
+          }
+        } else {
+          if ch == KEY_DOWN {
+            article_viewer = viewer_scroll_down(article_viewer);
+          } else if ch == KEY_UP {
+            article_viewer = viewer_scroll_up(article_viewer);
+          } else if ch == translate_key('o') {
+            open_article(&article_viewer);
           }
         }
       }
