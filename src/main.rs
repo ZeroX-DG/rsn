@@ -90,8 +90,12 @@ fn main() {
   feed_list = set_list_item_height(feed_list, 2);
   feed_list = set_list_text_overflow(feed_list, TextOverflow::Ellipsis);
 
-  let mut article_viewer = new_article_viewer(source_list_width + 2,
-    1, main_area_width - 4, term_height - 3);
+  let mut article_viewer = new_article_viewer(
+    source_list_width + 2,
+    1,
+    main_area_width - 4,
+    term_height - 3,
+  );
   loop {
     render_region(&main_area_region);
     render_region(&source_list_region);
@@ -176,6 +180,8 @@ fn main() {
             article_viewer = viewer_scroll_up(article_viewer);
           } else if ch == translate_key('o') {
             open_article(&article_viewer);
+          } else if ch == translate_key('b') {
+            show_feed = true;
           }
         }
       }
