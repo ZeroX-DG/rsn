@@ -1,4 +1,4 @@
-use super::source_list::Source;
+use super::Source;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
