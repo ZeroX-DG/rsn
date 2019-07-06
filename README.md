@@ -103,6 +103,11 @@ Just copy the `user_data_sample.json` file to `$home/.rsn/user_data.json`.
 - [ ] Allow rename source
 - [ ] Allow re-url source
 - [x] ~~Open article in browser~~
+- [x] ~~Separate widgets into a crate~~
+
+## Related
+
+- [darkside](https://github.com/ZeroX-DG/darkside) - The TUI-kit used to build this tool
 
 ## Author
 
