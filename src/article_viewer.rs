@@ -87,7 +87,7 @@ pub fn render_article_viewer(viewer: &ArticleViewer) {
     viewer.width,
     viewer.height,
     None,
-    Border::Bottom,
+    Border::None,
   );
   let mut title = new_text(&viewer.title, 0, viewer.scroll_top);
   title = set_text_effects(title, vec![TextEffect::Bold]);
