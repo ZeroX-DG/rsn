@@ -175,9 +175,23 @@ fn main() {
             show_feed = true;
             active_part = Parts::MainArea;
           }
+        } else if ch == translate_key('d') {
+          let index = get_list_selected_index(&source_list);
+          source_list = move_prev_list_item(source_list);
+          sources_display.remove(index as usize);
+          source_list = set_list_items(source_list, sources_display.clone());
+          user_data.sources.remove(index as usize);
+          user_data.set_sources(user_data.sources.clone());
+          user_data.save();
+        } else if ch == translate_key('q') {
+          active_part = Parts::MainApp;
         }
       }
       Parts::MainArea => {
+        if ch == translate_key('q') {
+          active_part = Parts::MainApp;
+          continue;
+        }
         if show_feed {
           if ch == KEY_DOWN {
             feed_list = move_next_list_item(feed_list);
